@@ -1,5 +1,6 @@
 import 'package:college_minor_project_frontend/AuthHandler.dart';
 import 'package:college_minor_project_frontend/providers/EmailProvider.dart';
+import 'package:college_minor_project_frontend/providers/TasksProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => EmailProvider()),
+      ChangeNotifierProvider(create: (context) => TasksProvider()),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,

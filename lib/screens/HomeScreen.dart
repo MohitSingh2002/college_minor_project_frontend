@@ -5,6 +5,7 @@ import 'package:college_minor_project_frontend/helpers/FirebaseAuthHelper.dart';
 import 'package:college_minor_project_frontend/helpers/PrefsHelper.dart';
 import 'package:college_minor_project_frontend/models/Task.dart';
 import 'package:college_minor_project_frontend/providers/EmailProvider.dart';
+import 'package:college_minor_project_frontend/providers/TasksProvider.dart';
 import 'package:college_minor_project_frontend/screens/AddTaskChatScreen.dart';
 import 'package:college_minor_project_frontend/screens/LoginScreen.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading = true;
     });
     ApiService().getAllTasks(Provider.of<EmailProvider>(context, listen: false).getEmail()).then((value) {
+      Provider.of<TasksProvider>(context, listen: false).addList(value);
       setState(() {
         tasksList = value;
         isLoading = false;
@@ -84,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isLoading = true;
                 });
                 ApiService().deleteTask(task.id as String).then((value) {
+                  Provider.of<TasksProvider>(context, listen: false).removeTask(index);
                   setState(() {
                     tasksList.removeAt(index);
                     isLoading = false;
@@ -165,6 +168,13 @@ class _HomeScreenState extends State<HomeScreen> {
           child: CircularProgressIndicator(
             color: AppStyle.red,
           ),
+        ) : context.watch<TasksProvider>().getTaskList().isEmpty ? Center(
+          child: Text(
+            'No Pending Tasks Found',
+            style: TextStyle(
+              color: AppStyle.white,
+            ),
+          ),
         ) : SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Padding(
@@ -176,9 +186,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: tasksList.length,
+                  itemCount: context.watch<TasksProvider>().getTaskList().length,
                   itemBuilder: (context, index) {
-                    Task task = tasksList.elementAt(index);
+                    Task task = context.watch<TasksProvider>().getTaskList().elementAt(index);
                     return Card(
                       color: AppStyle.purple_light,
                       child: ListTile(

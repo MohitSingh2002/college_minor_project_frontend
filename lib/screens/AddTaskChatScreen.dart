@@ -3,6 +3,7 @@ import 'package:college_minor_project_frontend/constants/Utils.dart';
 import 'package:college_minor_project_frontend/helpers/ApiService.dart';
 import 'package:college_minor_project_frontend/models/Task.dart';
 import 'package:college_minor_project_frontend/providers/EmailProvider.dart';
+import 'package:college_minor_project_frontend/providers/TasksProvider.dart';
 import 'package:college_minor_project_frontend/widgets/TextFieldCustomWithOutIcon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -114,6 +115,7 @@ class _AddTaskChatScreenState extends State<AddTaskChatScreen> {
                             estimatedCompletionTime: dateController.text.toString(),
                           );
                           ApiService().addTask(task).then((value) {
+                            Provider.of<TasksProvider>(context, listen: false).addTask(value);
                             Utils.showToast(message: 'Task Added Successfully');
                             Navigator.pop(context);
                           }).catchError((onError) {
