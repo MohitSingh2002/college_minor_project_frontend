@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 
    <application
-        android:label="college_minor_project_frontend"
+        android:label="nTask"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
