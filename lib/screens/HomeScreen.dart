@@ -7,7 +7,9 @@ import 'package:college_minor_project_frontend/models/Task.dart';
 import 'package:college_minor_project_frontend/providers/EmailProvider.dart';
 import 'package:college_minor_project_frontend/providers/TasksProvider.dart';
 import 'package:college_minor_project_frontend/screens/AddTaskChatScreen.dart';
+import 'package:college_minor_project_frontend/screens/AddTaskVoiceScreen.dart';
 import 'package:college_minor_project_frontend/screens/LoginScreen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -112,6 +114,30 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void showCompleteTask(Task task) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text(
+            '${task.task}',
+            style: TextStyle(
+              color: AppStyle.black,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void refresh() {
+    Provider.of<TasksProvider>(context, listen: false).clearTasksList();
+    setState(() {
+      tasksList = [];
+    });
+    getAllTasks();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,6 +151,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Refresh',
+            onPressed: () {
+              refresh();
+            },
+            icon: Icon(Icons.refresh, color: AppStyle.white,),
+          ),
           IconButton(
             tooltip: 'Logout',
             onPressed: () {
@@ -147,7 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
           FloatingActionButton(
             backgroundColor: AppStyle.purple_light,
             child: Icon(Icons.keyboard_voice,),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AddTaskVoiceScreen()));
+            },
             heroTag: 'Add task using voice',
           ),
           SizedBox(
@@ -196,17 +231,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: task.isCompleted == 'true',
                           activeColor: AppStyle.red,
                           onChanged: (value) {
-                            setState(() {
-                              if (task.isCompleted == 'true') {
-                                task.isCompleted = 'false';
-                                Provider.of<TasksProvider>(context, listen: false).updateAt(task, index);
-                              } else {
-                                updateTaskToCompleted(task, index);
-                              }
-                            });
+                            updateTaskToCompleted(task, index);
                           },
                         ),
-                        title: Text(
+                        title: task.task!.length > 11 ? RichText(
+                          text: TextSpan(
+                            text: '${task.task!.substring(0, 11)}',
+                            style: TextStyle(
+                              color: AppStyle.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              decoration: task.isCompleted == 'true' ? TextDecoration.lineThrough : TextDecoration.none,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: ' .....',
+                                style: TextStyle(
+                                  color: AppStyle.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  decoration: task.isCompleted == 'true' ? TextDecoration.lineThrough : TextDecoration.none,
+                                ),
+                                recognizer: TapGestureRecognizer()..onTap = () {
+                                  showCompleteTask(task);
+                                },
+                              ),
+                            ],
+                          ),
+                        ) : Text(
                           '${task.task}',
                           style: TextStyle(
                             color: AppStyle.white,

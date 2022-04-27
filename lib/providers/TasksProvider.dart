@@ -30,6 +30,11 @@ class TasksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearTasksList() {
+    tasksList = [];
+    notifyListeners();
+  }
+
   List<Task> getTaskList() {
     return tasksList;
   }
