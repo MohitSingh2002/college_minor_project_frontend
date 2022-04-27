@@ -29,4 +29,10 @@ class ApiService {
     return response.statusCode == 200;
   }
 
+  Future<bool> updateTask(String id) async {
+    Uri url = Uri.parse('$URL/task/updateTask/$id');
+    var response = await http.put(url);
+    return response.statusCode == 200;
+  }
+
 }

@@ -81,21 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
+                Provider.of<TasksProvider>(context, listen: false).removeTask(index);
                 Navigator.pop(context);
-                setState(() {
-                  isLoading = true;
-                });
                 ApiService().deleteTask(task.id as String).then((value) {
-                  Provider.of<TasksProvider>(context, listen: false).removeTask(index);
-                  setState(() {
-                    tasksList.removeAt(index);
-                    isLoading = false;
-                  });
-                  Utils.showToast(message: 'Task Deleted Successfully');
                 }).catchError((onError) {
-                  setState(() {
-                    isLoading = false;
-                  });
+                  Provider.of<TasksProvider>(context, listen: false).addTaskAt(task, index);
                   Utils.showToast(message: 'Some error occurred, please try again later');
                 });
               },
@@ -110,6 +100,16 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  void updateTaskToCompleted(Task task, int index) {
+    task.isCompleted = 'true';
+    Provider.of<TasksProvider>(context, listen: false).updateAt(task, index);
+    ApiService().updateTask(task.id as String).then((value) {}).catchError((onError) {
+      task.isCompleted = 'false';
+      Provider.of<TasksProvider>(context, listen: false).updateAt(task, index);
+      Utils.showToast(message: 'Some error occurred, please try again later');
+    });
   }
 
   @override
@@ -192,11 +192,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Card(
                       color: AppStyle.purple_light,
                       child: ListTile(
+                        leading: Checkbox(
+                          value: task.isCompleted == 'true',
+                          activeColor: AppStyle.red,
+                          onChanged: (value) {
+                            setState(() {
+                              if (task.isCompleted == 'true') {
+                                task.isCompleted = 'false';
+                                Provider.of<TasksProvider>(context, listen: false).updateAt(task, index);
+                              } else {
+                                updateTaskToCompleted(task, index);
+                              }
+                            });
+                          },
+                        ),
                         title: Text(
                           '${task.task}',
                           style: TextStyle(
                             color: AppStyle.white,
                             fontWeight: FontWeight.bold,
+                            decoration: task.isCompleted == 'true' ? TextDecoration.lineThrough : TextDecoration.none,
                             fontSize: 20.0,
                           ),
                         ),
@@ -204,6 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Estimated Time: ${task.estimatedCompletionTime}',
                           style: TextStyle(
                             color: AppStyle.white,
+                            decoration: task.isCompleted == 'true' ? TextDecoration.lineThrough : TextDecoration.none,
                           ),
                         ),
                         trailing: IconButton(

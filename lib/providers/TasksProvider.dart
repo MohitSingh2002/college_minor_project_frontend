@@ -15,8 +15,18 @@ class TasksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addTaskAt(Task task, int index) {
+    tasksList.insert(index, task);
+    notifyListeners();
+  }
+
   void removeTask(int index) {
     tasksList.removeAt(index);
+    notifyListeners();
+  }
+
+  void updateAt(Task task, int index) {
+    tasksList[index] = task;
     notifyListeners();
   }
 
