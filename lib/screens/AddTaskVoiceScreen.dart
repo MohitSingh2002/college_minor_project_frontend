@@ -47,7 +47,7 @@ class _AddTaskVoiceScreenState extends State<AddTaskVoiceScreen> {
         setState(() => isListening = true);
         speechToText.listen(
           onResult: (val) => setState(() {
-            voiceText += val.recognizedWords;
+            voiceText = val.recognizedWords;
             taskController = TextEditingController(text: voiceText);
           }),
         );
